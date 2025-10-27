@@ -1,0 +1,1 @@
+// wrapper pro objekty s interakcí
