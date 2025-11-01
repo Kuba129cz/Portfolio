@@ -1,12 +1,11 @@
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
-import { useMouseControls } from "../../hooks/MouseContext.jsx";
 import { useRef } from "react";
-import { Euler, Vector3, Quaternion, MathUtils } from "three";
+import { Vector3, Quaternion, Euler, MathUtils } from "three";
 
 export default function PlayerControls({ playerRef, setCurrentAction }) {
   const { forward, backward, left, right, run, jump } = useKeyboardControls();
-  const rotation = useMouseControls();
+  const { camera } = useThree();
 
   const speed = 4;
   const runMultiplier = 1.8;
@@ -18,8 +17,6 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
 
   const jumping = useRef(false);
   const currentActionRef = useRef("CharacterArmature|Idle_Neutral");
-
-  // keep the current rotation for smooth slerp
   const currentQuatRef = useRef(new Quaternion());
 
   useFrame(() => {
@@ -28,11 +25,14 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
 
     const linvel = body.linvel();
 
-    // directions vectors
-    forwardVector.set(Math.sin(rotation.y), 0, -Math.cos(rotation.y)).normalize();
+    // --- forward direction based on camera ---
+    camera.getWorldDirection(forwardVector);
+    forwardVector.y = 0; // ignore vertical component
+    forwardVector.normalize();
+
     rightVector.crossVectors(forwardVector, new Vector3(0, 1, 0)).normalize();
 
-    // inputs
+    // --- input handling ---
     direction.set(0, 0, 0);
     if (forward) direction.add(forwardVector);
     if (backward) direction.sub(forwardVector);
@@ -42,7 +42,7 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
     const isMoving = direction.lengthSq() > 0;
     if (isMoving) direction.normalize();
 
-    // Speed definition
+    // --- velocity ---
     const targetSpeed = speed * (run ? runMultiplier : 1);
     const targetVel = direction.clone().multiplyScalar(targetSpeed);
 
@@ -53,7 +53,7 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
     );
     body.setLinvel(newVel);
 
-    // Jump
+    // --- jump ---
     const onGround = Math.abs(linvel.y) < 0.05;
     if (jump && onGround && !jumping.current) {
       body.applyImpulse({ x: 0, y: jumpForce, z: 0 }, true);
@@ -61,10 +61,10 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
     }
     if (onGround && jumping.current) jumping.current = false;
 
-    // Animations selection
+    // --- animations ---
     let nextAction;
     if (jumping.current) {
-      nextAction = "CharacterArmature|Idle";
+      nextAction = "CharacterArmature|Jump";
     } else if (isMoving) {
       nextAction = run ? "CharacterArmature|Run" : "CharacterArmature|Walk";
     } else {
@@ -76,18 +76,15 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
       setCurrentAction && setCurrentAction(nextAction);
     }
 
+    // --- rotation to movement direction ---
     if (isMoving) {
       const moveDir = direction.clone().normalize();
       const targetAngle = Math.atan2(moveDir.x, moveDir.z);
       const targetQuat = new Quaternion().setFromEuler(new Euler(0, targetAngle, 0));
 
-      // smooth rotation interpolation
       currentQuatRef.current.slerp(targetQuat, 0.2);
       body.setRotation(currentQuatRef.current);
     }
-
-    const pos = body.translation();
-    // console.log("Current altitude (y):", pos.y);
   });
 
   return null;

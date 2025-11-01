@@ -8,13 +8,17 @@ import PlayerControls from "./controls/PlayerControls.jsx";
 import CameraController from "./controls/CameraController.jsx";
 import Man from "./models/Man";
 import House from "./models/House.jsx"
+import { usePointerLock } from "../hooks/UsePointer.jsx";
 
 export default function Scene() {
   const playerRef = useRef();
   const [currentAction, setCurrentAction] = useState("Idle_Neutral");
 
+  const canvasRef = useRef();
+  const { mouseLocked, lock, unlock } = usePointerLock(canvasRef);
+
   return (
-    <Canvas shadows camera={{ position: [3, 2, 5], fov: 50 }}>
+    <Canvas ref={canvasRef} shadows camera={{ position: [3, 2, 5], fov: 50 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1.2} />
 
