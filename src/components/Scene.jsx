@@ -8,7 +8,7 @@ import PlayerControls from "./controls/PlayerControls.jsx";
 import CameraController from "./controls/CameraController.jsx";
 import Man from "./models/Man";
 import House from "./models/House.jsx"
-import { usePointerLock } from "../hooks/UsePointer.jsx";
+import { usePointerLock } from "../hooks/usePointer.jsx";
 
 export default function Scene() {
   const playerRef = useRef();
