@@ -14,6 +14,8 @@ export default function Scene() {
   const playerRef = useRef();
   const [currentAction, setCurrentAction] = useState("Idle_Neutral");
 
+  const houseRef = useRef(); 
+
   const canvasRef = useRef();
   const { mouseLocked, lock, unlock } = usePointerLock(canvasRef);
 
@@ -44,28 +46,21 @@ export default function Scene() {
             linearDamping={1.5}
             angularDamping={2.5}
           >
-            {/*<CuboidCollider args={[0.35, 0.9, 0.35]} position={[0, 0.9, 0]} /> */}
             <CapsuleCollider args={[0.5, 0.3]} position={[0, 0.8, 0]} />
             <Man currentAction={currentAction} position={[0, 0, 0]} />
-
-              {/* wireframe pro debug */}
-             {/*
-              <mesh position={[0, 0, 0]}>
-                <cylinderGeometry args={[0.35, 0.35, 1.8, 16]} />
-                <meshBasicMaterial color="red" wireframe />
-              </mesh>
-              */}
           </RigidBody>
 
-          {/* <RigidBody type="fixed" colliders="trimesh"> */}
-            <House position={[-3, 0.01, 3]} />
-          {/*</RigidBody> */}
+           <RigidBody type="fixed" colliders="trimesh">
+            <House ref={houseRef} position={[-3, 0.01, 3]} />
+          </RigidBody> 
+
+          {/* Camera collision */}
 
         {/* Pohyb a ovládání */}
           <KeyboardProvider>
             <MouseProvider>
               <PlayerControls playerRef={playerRef} setCurrentAction={setCurrentAction} />
-              <CameraController playerRef={playerRef} />
+              <CameraController playerRef={playerRef} houseRef={houseRef} />
             </MouseProvider>
           </KeyboardProvider>
         </Physics>
