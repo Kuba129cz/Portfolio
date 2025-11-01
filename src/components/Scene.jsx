@@ -45,14 +45,16 @@ export default function Scene() {
             angularDamping={2.5}
           >
             {/*<CuboidCollider args={[0.35, 0.9, 0.35]} position={[0, 0.9, 0]} /> */}
-            <CapsuleCollider args={[0.35, 0.9]} position={[0, 0.9, 0]} />
-            <Man sd currentAction={currentAction} position={[0, 0, 0]} />
+            <CapsuleCollider args={[0.5, 0.3]} position={[0, 0.8, 0]} />
+            <Man currentAction={currentAction} position={[0, 0, 0]} />
 
               {/* wireframe pro debug */}
-              <mesh position={[0, 0.9, 0]}>
+             {/*
+              <mesh position={[0, 0, 0]}>
                 <cylinderGeometry args={[0.35, 0.35, 1.8, 16]} />
                 <meshBasicMaterial color="red" wireframe />
               </mesh>
+              */}
           </RigidBody>
 
           {/* <RigidBody type="fixed" colliders="trimesh"> */}
