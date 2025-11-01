@@ -1,26 +1,25 @@
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
-import { useMouseControls } from "../../hooks/MouseContext.jsx";
 import { useRef } from "react";
-import { Euler, Vector3, Quaternion, MathUtils } from "three";
+import { Vector3, Quaternion, Euler, MathUtils } from "three";
+import { useMouseControls } from "../../hooks/MouseContext.jsx";
 
 export default function PlayerControls({ playerRef, setCurrentAction }) {
   const { forward, backward, left, right, run, jump } = useKeyboardControls();
-  const rotation = useMouseControls();
+  const rotation = useMouseControls(); 
+  const { camera } = useThree();
 
   const speed = 4;
   const runMultiplier = 1.8;
-  const jumpForce = 4.5;
+  const jumpForce = 2;
 
-  const direction = new Vector3();
   const forwardVector = new Vector3();
   const rightVector = new Vector3();
+  const direction = new Vector3();
 
   const jumping = useRef(false);
   const currentActionRef = useRef("CharacterArmature|Idle_Neutral");
-
-  // keep the current rotation for smooth slerp
-  const currentQuatRef = useRef(new Quaternion());
+  const smoothRotation = useRef(new Quaternion());
 
   useFrame(() => {
     const body = playerRef.current;
@@ -28,11 +27,11 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
 
     const linvel = body.linvel();
 
-    // directions vectors
-    forwardVector.set(Math.sin(rotation.y), 0, -Math.cos(rotation.y)).normalize();
-    rightVector.crossVectors(forwardVector, new Vector3(0, 1, 0)).normalize();
+    // --- camera-relative movement ---
+    const cameraYRotation = rotation.y; 
+    forwardVector.set(-Math.sin(cameraYRotation), 0, -Math.cos(cameraYRotation)).normalize();
+    rightVector.set(Math.sin(cameraYRotation + Math.PI / 2), 0, Math.cos(cameraYRotation + Math.PI / 2)).normalize();
 
-    // inputs
     direction.set(0, 0, 0);
     if (forward) direction.add(forwardVector);
     if (backward) direction.sub(forwardVector);
@@ -42,52 +41,44 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
     const isMoving = direction.lengthSq() > 0;
     if (isMoving) direction.normalize();
 
-    // Speed definition
+    // --- velocity ---
     const targetSpeed = speed * (run ? runMultiplier : 1);
     const targetVel = direction.clone().multiplyScalar(targetSpeed);
 
     const newVel = new Vector3(
-      MathUtils.lerp(linvel.x, targetVel.x, 0.2),
+      MathUtils.lerp(linvel.x, targetVel.x, 0.15),
       linvel.y,
-      MathUtils.lerp(linvel.z, targetVel.z, 0.2)
+      MathUtils.lerp(linvel.z, targetVel.z, 0.15)
     );
     body.setLinvel(newVel);
 
-    // Jump
-    const onGround = Math.abs(linvel.y) < 0.05;
+    // --- jump ---
+    const onGround = Math.abs(linvel.y) < 0.02;
     if (jump && onGround && !jumping.current) {
       body.applyImpulse({ x: 0, y: jumpForce, z: 0 }, true);
       jumping.current = true;
     }
     if (onGround && jumping.current) jumping.current = false;
 
-    // Animations selection
+    // --- animations ---
     let nextAction;
-    if (jumping.current) {
-      nextAction = "CharacterArmature|Idle";
-    } else if (isMoving) {
-      nextAction = run ? "CharacterArmature|Run" : "CharacterArmature|Walk";
-    } else {
-      nextAction = "CharacterArmature|Idle_Neutral";
-    }
+    if (jumping.current) nextAction = "CharacterArmature|Jump";
+    else if (isMoving) nextAction = run ? "CharacterArmature|Run" : "CharacterArmature|Walk";
+    else nextAction = "CharacterArmature|Idle_Neutral";
 
     if (nextAction !== currentActionRef.current) {
       currentActionRef.current = nextAction;
       setCurrentAction && setCurrentAction(nextAction);
     }
 
+    // --- rotation to movement direction ---
     if (isMoving) {
       const moveDir = direction.clone().normalize();
       const targetAngle = Math.atan2(moveDir.x, moveDir.z);
       const targetQuat = new Quaternion().setFromEuler(new Euler(0, targetAngle, 0));
-
-      // smooth rotation interpolation
-      currentQuatRef.current.slerp(targetQuat, 0.2);
-      body.setRotation(currentQuatRef.current);
+      smoothRotation.current.slerp(targetQuat, 0.2);
+      body.setRotation(smoothRotation.current);
     }
-
-    const pos = body.translation();
-    // console.log("Current altitude (y):", pos.y);
   });
 
   return null;

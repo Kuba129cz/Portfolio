@@ -8,13 +8,17 @@ import PlayerControls from "./controls/PlayerControls.jsx";
 import CameraController from "./controls/CameraController.jsx";
 import Man from "./models/Man";
 import House from "./models/House.jsx"
+import { usePointerLock } from "../hooks/UsePointer.jsx";
 
 export default function Scene() {
   const playerRef = useRef();
   const [currentAction, setCurrentAction] = useState("Idle_Neutral");
 
+  const canvasRef = useRef();
+  const { mouseLocked, lock, unlock } = usePointerLock(canvasRef);
+
   return (
-    <Canvas shadows camera={{ position: [3, 2, 5], fov: 50 }}>
+    <Canvas ref={canvasRef} shadows camera={{ position: [3, 2, 5], fov: 50 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1.2} />
 
@@ -41,14 +45,16 @@ export default function Scene() {
             angularDamping={2.5}
           >
             {/*<CuboidCollider args={[0.35, 0.9, 0.35]} position={[0, 0.9, 0]} /> */}
-            <CapsuleCollider args={[0.35, 0.9]} position={[0, 0.9, 0]} />
-            <Man sd currentAction={currentAction} position={[0, 0, 0]} />
+            <CapsuleCollider args={[0.5, 0.3]} position={[0, 0.8, 0]} />
+            <Man currentAction={currentAction} position={[0, 0, 0]} />
 
               {/* wireframe pro debug */}
-              <mesh position={[0, 0.9, 0]}>
+             {/*
+              <mesh position={[0, 0, 0]}>
                 <cylinderGeometry args={[0.35, 0.35, 1.8, 16]} />
                 <meshBasicMaterial color="red" wireframe />
               </mesh>
+              */}
           </RigidBody>
 
           {/* <RigidBody type="fixed" colliders="trimesh"> */}
