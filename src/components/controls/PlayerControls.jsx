@@ -1,58 +1,94 @@
-// src/components/controls/PlayerControls.jsx
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
-import { Vector3 } from "three";
-import { useState } from "react";
+import { useMouseControls } from "../../hooks/MouseContext.jsx";
+import { useRef } from "react";
+import { Euler, Vector3, Quaternion, MathUtils } from "three";
 
-export default function PlayerControls({ playerRef }) {
+export default function PlayerControls({ playerRef, setCurrentAction }) {
   const { forward, backward, left, right, run, jump } = useKeyboardControls();
-  const [currentAction, setCurrentAction] = useState("Idle");
+  const rotation = useMouseControls();
 
   const speed = 4;
   const runMultiplier = 1.8;
   const jumpForce = 4.5;
+
   const direction = new Vector3();
+  const forwardVector = new Vector3();
+  const rightVector = new Vector3();
 
-  useFrame((state, delta) => {
+  const jumping = useRef(false);
+  const currentActionRef = useRef("CharacterArmature|Idle_Neutral");
+
+  // keep the current rotation for smooth slerp
+  const currentQuatRef = useRef(new Quaternion());
+
+  useFrame(() => {
     const body = playerRef.current;
-    if (!body || typeof body.applyImpulse !== "function") return;
+    if (!body || typeof body.linvel !== "function") return;
 
-    // Pohybový vektor
-    direction.set(
-      (left ? 1 : 0) - (right ? 1 : 0),
-      0,
-      (forward ? 1 : 0) - (backward ? 1 : 0)
+    const linvel = body.linvel();
+
+    // directions vectors
+    forwardVector.set(Math.sin(rotation.y), 0, -Math.cos(rotation.y)).normalize();
+    rightVector.crossVectors(forwardVector, new Vector3(0, 1, 0)).normalize();
+
+    // inputs
+    direction.set(0, 0, 0);
+    if (forward) direction.add(forwardVector);
+    if (backward) direction.sub(forwardVector);
+    if (left) direction.sub(rightVector);
+    if (right) direction.add(rightVector);
+
+    const isMoving = direction.lengthSq() > 0;
+    if (isMoving) direction.normalize();
+
+    // Speed definition
+    const targetSpeed = speed * (run ? runMultiplier : 1);
+    const targetVel = direction.clone().multiplyScalar(targetSpeed);
+
+    const newVel = new Vector3(
+      MathUtils.lerp(linvel.x, targetVel.x, 0.2),
+      linvel.y,
+      MathUtils.lerp(linvel.z, targetVel.z, 0.2)
     );
+    body.setLinvel(newVel);
 
-    const moving = direction.length() > 0;
-    const moveSpeed = run ? speed * runMultiplier : speed;
+    // Jump
+    const onGround = Math.abs(linvel.y) < 0.05;
+    if (jump && onGround && !jumping.current) {
+      body.applyImpulse({ x: 0, y: jumpForce, z: 0 }, true);
+      jumping.current = true;
+    }
+    if (onGround && jumping.current) jumping.current = false;
 
-    // Animace
-    setCurrentAction(moving ? (run ? "Run" : "Walk") : "Idle");
-
-    // Normalizace směru
-    direction.normalize();
-
-    // Pohyb hráče
-    body.applyImpulse(
-      { x: direction.x * moveSpeed * delta, y: 0, z: direction.z * moveSpeed * delta },
-      true
-    );
-
-    // Skok
-    if (jump) {
-      const linvel = body.linvel();
-      if (Math.abs(linvel.y) < 0.05) {
-        body.applyImpulse({ x: 0, y: jumpForce, z: 0 }, true);
-        setCurrentAction("Jump");
-      }
+    // Animations selection
+    let nextAction;
+    if (jumping.current) {
+      nextAction = "CharacterArmature|Idle";
+    } else if (isMoving) {
+      nextAction = run ? "CharacterArmature|Run" : "CharacterArmature|Walk";
+    } else {
+      nextAction = "CharacterArmature|Idle_Neutral";
     }
 
-    // Kamera sleduje hráče
+    if (nextAction !== currentActionRef.current) {
+      currentActionRef.current = nextAction;
+      setCurrentAction && setCurrentAction(nextAction);
+    }
+
+    if (isMoving) {
+      const moveDir = direction.clone().normalize();
+      const targetAngle = Math.atan2(moveDir.x, moveDir.z);
+      const targetQuat = new Quaternion().setFromEuler(new Euler(0, targetAngle, 0));
+
+      // smooth rotation interpolation
+      currentQuatRef.current.slerp(targetQuat, 0.2);
+      body.setRotation(currentQuatRef.current);
+    }
+
     const pos = body.translation();
-    state.camera.position.lerp({ x: pos.x, y: pos.y + 2, z: pos.z + 4 }, 0.1);
-    state.camera.lookAt(pos.x, pos.y + 1, pos.z);
+    // console.log("Current altitude (y):", pos.y);
   });
 
-  return null; // Nevykresluje nic
+  return null;
 }
