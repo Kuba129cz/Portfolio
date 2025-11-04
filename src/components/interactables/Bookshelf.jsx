@@ -1,0 +1,54 @@
+import { useEffect, useState } from "react";
+import { Box3, Vector3 } from "three";
+import QuestionMark from "../ui/QuestionMark.jsx";
+import useIsNear from  '../../hooks/useIsNear.jsx'
+import InteractionPrompt from "../ui/InteractionPrompt.jsx";
+
+export default function Bookshelf({ target, playerRef }) {
+  const [questionMarkPos, setQuestionMarkPos] = useState(null);
+  const [interactionCenter, setInteractionCenter] = useState(null);
+
+  useEffect(() => {
+    if (!target) return;
+
+    const box = new Box3().setFromObject(target);
+
+    const center = new Vector3();
+    const size = new Vector3();
+    box.getCenter(center);
+    box.getSize(size);
+
+    center.z += 2 // offset
+
+    const interactionCenter = center.clone();
+
+    const questionMarkPos = interactionCenter.clone();
+    questionMarkPos.y += size.y / 2 + 0.3;
+
+    setQuestionMarkPos(questionMarkPos);
+    setInteractionCenter(interactionCenter);
+
+   // console.log("Center knihovny:", center);
+   // console.log("otaznik pozice:", questionMarkPos);
+  }, [target]);
+
+  const isNear = useIsNear(playerRef, interactionCenter, 1.5);
+/*
+  useEffect(() => {
+    if (isNear) {
+      console.log("Hráč je blízko knihovny!");
+    }
+  }, [isNear]);
+*/
+    return (
+    <>
+      {questionMarkPos && (
+        <QuestionMark position={questionMarkPos.toArray()} visible={true} />
+      )}
+
+      {interactionCenter && (
+      <InteractionPrompt position={interactionCenter} visible={isNear} />
+    )}
+    </>
+    )
+}

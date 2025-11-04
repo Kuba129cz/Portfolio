@@ -12,7 +12,8 @@ export function KeyboardProvider({ children }) {
     right: false,
     run: false,
     jump: false,
-    interact: false
+    interact: false,
+    excape: false
   })
   
   useEffect(() => {
@@ -25,6 +26,7 @@ export function KeyboardProvider({ children }) {
         case "ShiftLeft": setKeys(k => ({ ...k, run: true })); break;
         case "Space": setKeys(k => ({ ...k, jump: true })); break;
         case "KeyE": setKeys(k => ({ ...k, interact: true })); break;
+        case "Escape": setKeys(k => ({ ...k, escape: true })); break;
       }
     };
 
@@ -37,6 +39,7 @@ export function KeyboardProvider({ children }) {
         case "ShiftLeft": setKeys(k => ({ ...k, run: false })); break;
         case "Space": setKeys(k => ({ ...k, jump: false })); break;
         case "KeyE": setKeys(k => ({ ...k, interact: false })); break;
+        case "Escape": setKeys(k => ({ ...k, escape: false })); break;
       }
     };
 
