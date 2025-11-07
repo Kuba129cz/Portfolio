@@ -6,8 +6,8 @@ import InteractionPrompt from "../ui/InteractionPrompt.jsx";
 import { usePopup } from "../../context/PopupContext.jsx";
 import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
 
-const modules = import.meta.glob("/src/assets/bookcovers/*.{jpg,png,jpeg}", { eager: true }); 
-const bookCovers = Object.keys(modules).map((path) => path.replace("/src", ""));
+const modules = import.meta.glob("/src/assets/bookcovers/*.{jpg,png,jpeg}", { eager: true });
+const bookCovers = Object.values(modules).map((mod) => mod.default);
 
 export default function Bookshelf({ target, playerRef }) {
   const [questionMarkPos, setQuestionMarkPos] = useState(null);

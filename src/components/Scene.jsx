@@ -10,6 +10,7 @@ import CameraController from "./controls/CameraController.jsx";
 import Man from "./models/Man";
 import House from "./models/House.jsx";
 import Bookshelf from './interactables/Bookshelf.jsx';
+import { usePopup } from "./../context/PopupContext.jsx";
 
 export default function Scene() {
   const playerRef = useRef();
@@ -18,6 +19,15 @@ export default function Scene() {
   const [currentAction, setCurrentAction] = useState("Idle_Neutral");
   const [interactables, setInteractables] = useState({});
   const { mouseLocked, lock, unlock } = usePointerLock(canvasRef);
+  const { isOpen } = usePopup()
+
+  useEffect(() => {
+    if (isOpen) {
+      unlock(); // myš viditelná a volná
+    } else if (!mouseLocked) {
+      lock(); // zamknout myš, pokud není již zamknutá
+    }
+  }, [isOpen]);
 
   useEffect(() => 
   {
