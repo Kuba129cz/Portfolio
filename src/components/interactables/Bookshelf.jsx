@@ -6,7 +6,7 @@ import InteractionPrompt from "../ui/InteractionPrompt.jsx";
 import { usePopup } from "../../context/PopupContext.jsx";
 import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
 
-const modules = import.meta.glob("/src/assets/bookcovers/*.{jpg,png,jpeg}", { eager: true });
+const modules = import.meta.glob("/src/assets/bookcovers/*.{jpg,png,jpeg}", { eager: false });
 const bookCovers = Object.values(modules).map((mod) => mod.default);
 
 export default function Bookshelf({ target, playerRef }) {
@@ -14,6 +14,16 @@ export default function Bookshelf({ target, playerRef }) {
   const [interactionCenter, setInteractionCenter] = useState(null);
   const { isOpen, openPopup } = usePopup();
   const { interact } = useKeyboardControls();
+  const [bookCovers, setBookCovers] = useState([]);
+
+  useEffect(() => {
+    const loadCovers = async () => {
+      const promises = Object.values(modules).map(mod => mod());
+      const results = await Promise.all(promises);
+      setBookCovers(results.map(r => r.default));
+    };
+    loadCovers();
+  }, []);
 
   useEffect(() => {
     if (!target) return;

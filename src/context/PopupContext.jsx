@@ -21,7 +21,7 @@ export function PopupProvider({ children }) {
     setIsOpen(false);
     setPopupData(null);
     setPopupType(null);
-    setTimeout(() => setCanOpen(true), 1000);
+    setTimeout(() => setCanOpen(true), 500);
   };
 
   return (
