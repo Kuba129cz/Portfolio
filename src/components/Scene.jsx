@@ -1,23 +1,49 @@
+import { useEffect, useRef, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useRef, useState } from "react";
+import { Physics, RigidBody, CapsuleCollider } from "@react-three/rapier";
 import { OrbitControls } from "@react-three/drei";
-import { Physics, RigidBody, CapsuleCollider, CuboidCollider } from "@react-three/rapier";
 import { KeyboardProvider } from "../hooks/KeyboardContext.jsx";
 import { MouseProvider } from "../hooks/MouseContext.jsx";
+import { usePointerLock } from "../hooks/usePointer.jsx";
 import PlayerControls from "./controls/PlayerControls.jsx";
 import CameraController from "./controls/CameraController.jsx";
 import Man from "./models/Man";
-import House from "./models/House.jsx"
-import { usePointerLock } from "../hooks/usePointer.jsx";
+import House from "./models/House.jsx";
+import Bookshelf from './interactables/Bookshelf.jsx';
+import { usePopup } from "./../context/PopupContext.jsx";
 
 export default function Scene() {
   const playerRef = useRef();
-  const [currentAction, setCurrentAction] = useState("Idle_Neutral");
-
-  const houseRef = useRef(); 
-
+  const houseRef = useRef();
   const canvasRef = useRef();
+  const [currentAction, setCurrentAction] = useState("Idle_Neutral");
+  const [interactables, setInteractables] = useState({});
   const { mouseLocked, lock, unlock } = usePointerLock(canvasRef);
+  const { isOpen } = usePopup()
+
+  useEffect(() => {
+    if (isOpen) {
+      unlock(); // myš viditelná a volná
+    } else if (!mouseLocked) {
+      lock(); // zamknout myš, pokud není již zamknutá
+    }
+  }, [isOpen]);
+
+  useEffect(() => 
+  {
+    if (!houseRef.current) return;
+
+    const objects = {};
+    houseRef.current.traverse((child) => 
+      {
+        if (child.isGroup && child.name === "bookcaseWideFilled") 
+        {
+          objects.bookshelf = child;
+        }
+      });
+
+    setInteractables(objects);
+  }, [houseRef.current]);
 
   return (
     <Canvas ref={canvasRef} shadows camera={{ position: [3, 2, 5], fov: 50 }}>
@@ -28,7 +54,7 @@ export default function Scene() {
         <Physics>
           {/* Floor */}
           <RigidBody type="fixed" colliders="cuboid">
-            <mesh rotation-x={-Math.PI / 2} receiveShadow position={ [0, 0, 0] }>
+            <mesh rotation-x={-Math.PI / 2} receiveShadow position={[0, 0, 0]}>
               <planeGeometry args={[20, 20]} />
               <meshStandardMaterial color="lightgray" />
             </mesh>
@@ -39,7 +65,7 @@ export default function Scene() {
             ref={playerRef}
             colliders={false}
             mass={1}
-            position={[0, 1, 0]} 
+            position={[0, 1, 0]}
             restitution={0}
             friction={1}
             lockRotations
@@ -50,17 +76,30 @@ export default function Scene() {
             <Man currentAction={currentAction} position={[0, 0, 0]} />
           </RigidBody>
 
-           <RigidBody type="fixed" colliders="trimesh">
+          {/* House */}
+          <RigidBody type="fixed" colliders="trimesh">
             <House ref={houseRef} position={[-3, 0.01, 3]} />
-          </RigidBody> 
+          </RigidBody>
 
-          {/* Camera collision */}
-
-        {/* Pohyb a ovládání */}
+          {/* Ovládání */}
           <KeyboardProvider>
             <MouseProvider>
-              <PlayerControls playerRef={playerRef} setCurrentAction={setCurrentAction} />
-              <CameraController playerRef={playerRef} houseRef={houseRef} />
+
+          {interactables.bookshelf && (
+            <Bookshelf
+              playerRef={playerRef}
+              target={interactables.bookshelf}
+            />
+          )}
+
+              <PlayerControls
+                playerRef={playerRef}
+                setCurrentAction={setCurrentAction}
+              />
+              <CameraController
+                playerRef={playerRef}
+                houseRef={houseRef}
+              />
             </MouseProvider>
           </KeyboardProvider>
         </Physics>

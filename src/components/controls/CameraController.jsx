@@ -2,10 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMouseControls } from "../../hooks/MouseContext.jsx";
 import { Vector3, Box3 } from "three";
+import { usePopup } from "../../context/PopupContext.jsx";
 
 export default function CameraController({ playerRef, houseRef }) {
   const { camera } = useThree();
   const rotation = useMouseControls();
+const { isOpen } = usePopup()
 
   const [targetRadius, setTargetRadius] = useState(5); 
   const radiusRef = useRef(5);
@@ -13,6 +15,7 @@ export default function CameraController({ playerRef, houseRef }) {
   // Zoom
   useEffect(() => {
     const handleWheel = (e) => {
+      if (isOpen) return; // zoom disabled if popup is open
       e.preventDefault();
       const delta = e.deltaY * 0.02; 
       setTargetRadius((r) => Math.max(2, Math.min(10, r + delta)));
@@ -31,7 +34,7 @@ export default function CameraController({ playerRef, houseRef }) {
   }, [houseRef]);
 
   useFrame(() => {
-    if (!playerRef.current) return;
+    if (!playerRef.current || isOpen) return;
 
     const playerPos = playerRef.current.translation();
 

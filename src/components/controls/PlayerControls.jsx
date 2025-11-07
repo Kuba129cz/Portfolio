@@ -3,11 +3,13 @@ import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
 import { useRef } from "react";
 import { Vector3, Quaternion, Euler, MathUtils } from "three";
 import { useMouseControls } from "../../hooks/MouseContext.jsx";
+import { usePopup } from "../../context/PopupContext.jsx";
 
 export default function PlayerControls({ playerRef, setCurrentAction }) {
   const { forward, backward, left, right, run, jump } = useKeyboardControls();
   const rotation = useMouseControls(); 
   const { camera } = useThree();
+  const { isOpen } = usePopup();
 
   const speed = 4;
   const runMultiplier = 1.8;
@@ -22,6 +24,7 @@ export default function PlayerControls({ playerRef, setCurrentAction }) {
   const smoothRotation = useRef(new Quaternion());
 
   useFrame(() => {
+    if (isOpen) return;
     const body = playerRef.current;
     if (!body || typeof body.linvel !== "function") return;
 
