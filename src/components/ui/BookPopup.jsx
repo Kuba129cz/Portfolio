@@ -42,6 +42,7 @@ export default function BookPopup({ books = [] }) {
       }}
     >
       <h2>Bookshelf</h2>
+
       <div
         style={{
           width: "250px",
@@ -56,13 +57,17 @@ export default function BookPopup({ books = [] }) {
       >
         <img
           src={books[index]}
-          alt="Book Cover"
+          alt={`Book ${index + 1}`}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       </div>
 
-      <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+      {/* Navigace s číselníkem mezi tlačítky */}
+      <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
         <button onClick={prevBook}>◀ Prev</button>
+        <span style={{ minWidth: "40px", textAlign: "center" }}>
+          {index + 1} / {books.length}
+        </span>
         <button onClick={nextBook}>Next ▶</button>
       </div>
 
