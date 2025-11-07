@@ -71,6 +71,10 @@ export default function Scene() {
             <House ref={houseRef} position={[-3, 0.01, 3]} />
           </RigidBody>
 
+          {/* Ovládání */}
+          <KeyboardProvider>
+            <MouseProvider>
+
           {interactables.bookshelf && (
             <Bookshelf
               playerRef={playerRef}
@@ -78,9 +82,6 @@ export default function Scene() {
             />
           )}
 
-          {/* Ovládání */}
-          <KeyboardProvider>
-            <MouseProvider>
               <PlayerControls
                 playerRef={playerRef}
                 setCurrentAction={setCurrentAction}

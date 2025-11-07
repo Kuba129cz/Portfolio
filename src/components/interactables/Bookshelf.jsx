@@ -3,10 +3,17 @@ import { Box3, Vector3 } from "three";
 import QuestionMark from "../ui/QuestionMark.jsx";
 import useIsNear from  '../../hooks/useIsNear.jsx'
 import InteractionPrompt from "../ui/InteractionPrompt.jsx";
+import { usePopup } from "../../context/PopupContext.jsx";
+import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
+
+const modules = import.meta.glob("/src/assets/bookcovers/*.{jpg,png,jpeg}", { eager: true }); 
+const bookCovers = Object.keys(modules).map((path) => path.replace("/src", ""));
 
 export default function Bookshelf({ target, playerRef }) {
   const [questionMarkPos, setQuestionMarkPos] = useState(null);
   const [interactionCenter, setInteractionCenter] = useState(null);
+  const { isOpen, openPopup } = usePopup();
+  const { interact } = useKeyboardControls();
 
   useEffect(() => {
     if (!target) return;
@@ -33,13 +40,15 @@ export default function Bookshelf({ target, playerRef }) {
   }, [target]);
 
   const isNear = useIsNear(playerRef, interactionCenter, 1.5);
-/*
+
   useEffect(() => {
-    if (isNear) {
-      console.log("Hráč je blízko knihovny!");
+    if (isNear && interact && !isOpen) {
+    // console.log("Hráč je blízko knihovny!");
+     // vyvolam popup
+     openPopup("books", bookCovers);
     }
-  }, [isNear]);
-*/
+  }, [isNear, interact]);
+
     return (
     <>
       {questionMarkPos && (

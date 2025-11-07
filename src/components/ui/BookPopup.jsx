@@ -1,0 +1,48 @@
+import { useState } from "react";
+import { usePopup } from "../../context/PopupContext.jsx";
+
+export default function BookPopup({ books = [] }) {
+  const [index, setIndex] = useState(0);
+  const { closePopup } = usePopup();
+
+  const prevBook = () => setIndex((i) => (i - 1 + books.length) % books.length);
+  const nextBook = () => setIndex((i) => (i + 1) % books.length);
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        backgroundColor: "rgba(0,0,0,0.85)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        color: "white",
+      }}
+    >
+      <h2>Bookshelf</h2>
+      <div
+        style={{
+          width: "250px",
+          height: "350px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#111",
+          borderRadius: "10px",
+          overflow: "hidden",
+        }}
+      >
+        <img src={books[index]} alt="Book Cover" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      </div>
+
+      <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+        <button onClick={prevBook}>◀ Prev</button>
+        <button onClick={nextBook}>Next ▶</button>
+      </div>
+
+      <button onClick={closePopup} style={{ marginTop: "20px" }}>Close</button>
+    </div>
+  );
+}
