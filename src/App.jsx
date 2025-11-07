@@ -10,7 +10,7 @@ function PopupContainer() {
 
   switch (popupType) {
     case "books":
-      return <BookPopup books={popupData} onClose={closePopup} />;
+      return <BookPopup books={popupData} title="Bookshelf" />;
     case "certificates":
       return <CertificatePopup certs={popupData} onClose={closePopup} />;
     default:

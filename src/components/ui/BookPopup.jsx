@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePopup } from "../../context/PopupContext.jsx";
 
-export default function BookPopup({ books = [] }) {
+export default function BookPopup({ books = [], title = "Bookshelf" }) {
   const [index, setIndex] = useState(0);
   const { closePopup } = usePopup();
 
@@ -41,7 +41,7 @@ export default function BookPopup({ books = [] }) {
         color: "white",
       }}
     >
-      <h2>Bookshelf</h2>
+      <h2>{title}</h2>
 
       <div
         style={{
@@ -57,12 +57,11 @@ export default function BookPopup({ books = [] }) {
       >
         <img
           src={books[index]}
-          alt={`Book ${index + 1}`}
+          alt={`${title} ${index + 1}`}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       </div>
 
-      {/* Navigace s číselníkem mezi tlačítky */}
       <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
         <button onClick={prevBook}>◀ Prev</button>
         <span style={{ minWidth: "40px", textAlign: "center" }}>
