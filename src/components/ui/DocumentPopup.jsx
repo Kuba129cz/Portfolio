@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
 import { usePopup } from "../../context/PopupContext.jsx";
 
-export default function BookPopup({ books = [] }) {
+export default function DocumentPopup({ documents = [], title = "Documents" }) {
   const [index, setIndex] = useState(0);
   const { closePopup } = usePopup();
 
-  const prevBook = () => setIndex((i) => (i - 1 + books.length) % books.length);
-  const nextBook = () => setIndex((i) => (i + 1) % books.length);
+  const prevDocument = () => setIndex((i) => (i - 1 + documents.length) % documents.length);
+  const nextDocument = () => setIndex((i) => (i + 1) % documents.length);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       switch (e.code) {
         case "KeyA":
-          prevBook();
+          prevDocument();
           break;
         case "KeyD":
-          nextBook();
+          nextDocument();
           break;
         case "KeyE":
         case "Escape":
@@ -26,7 +26,7 @@ export default function BookPopup({ books = [] }) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [books, closePopup]);
+  }, [documents, closePopup]);
 
   return (
     <div
@@ -39,13 +39,17 @@ export default function BookPopup({ books = [] }) {
         justifyContent: "center",
         flexDirection: "column",
         color: "white",
+        padding: "20px",
       }}
     >
-      <h2>Bookshelf</h2>
+      <h2>{title}</h2>
+
       <div
         style={{
-          width: "250px",
-          height: "350px",
+          width: "90vw",
+          height: "90vh",
+          maxWidth: "800px",
+          maxHeight: "1100px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -55,15 +59,18 @@ export default function BookPopup({ books = [] }) {
         }}
       >
         <img
-          src={books[index]}
-          alt="Book Cover"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          src={documents[index]}
+          alt={`${title} ${index + 1}`}
+          style={{ width: "100%", height: "100%", objectFit: "contain", background: "#111" }}
         />
       </div>
 
-      <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
-        <button onClick={prevBook}>◀ Prev</button>
-        <button onClick={nextBook}>Next ▶</button>
+      <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
+        <button onClick={prevDocument}>◀ Prev</button>
+        <span style={{ minWidth: "40px", textAlign: "center" }}>
+          {index + 1} / {documents.length}
+        </span>
+        <button onClick={nextDocument}>Next ▶</button>
       </div>
 
       <button onClick={closePopup} style={{ marginTop: "20px" }}>
