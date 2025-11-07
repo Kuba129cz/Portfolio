@@ -41,13 +41,13 @@ export default function Bookshelf({ target, playerRef }) {
 
   const isNear = useIsNear(playerRef, interactionCenter, 1.5);
 
+  const { canOpen, setCanOpen } = usePopup();
   useEffect(() => {
-    if (isNear && interact && !isOpen) {
-    // console.log("Hráč je blízko knihovny!");
-     // vyvolam popup
-     openPopup("books", bookCovers);
+    if (isNear && interact && !isOpen && canOpen) 
+    {
+      openPopup("books", bookCovers);
     }
-  }, [isNear, interact]);
+  }, [isNear, interact, canOpen]);
 
     return (
     <>

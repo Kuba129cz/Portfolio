@@ -13,7 +13,7 @@ export function KeyboardProvider({ children }) {
     run: false,
     jump: false,
     interact: false,
-    excape: false
+    escape: false
   })
   
   useEffect(() => {
