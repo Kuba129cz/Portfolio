@@ -11,6 +11,7 @@ import Man from "./models/Man";
 import House from "./models/House.jsx";
 import Bookshelf from './interactables/Bookshelf.jsx';
 import { usePopup } from "./../context/PopupContext.jsx";
+import Board from "./interactables/Board.jsx";
 
 export default function Scene() {
   const playerRef = useRef();
@@ -23,9 +24,9 @@ export default function Scene() {
 
   useEffect(() => {
     if (isOpen) {
-      unlock(); // myš viditelná a volná
+      unlock(); 
     } else if (!mouseLocked) {
-      lock(); // zamknout myš, pokud není již zamknutá
+      lock();
     }
   }, [isOpen]);
 
@@ -35,11 +36,18 @@ export default function Scene() {
 
     const objects = {};
     houseRef.current.traverse((child) => 
-      {
-        if (child.isGroup && child.name === "bookcaseWideFilled") 
+      {  
+        if(child.isGroup)
         {
-          objects.bookshelf = child;
-        }
+          if(child.name === "bookcaseWideFilled") 
+          {
+            objects.bookshelf = child;
+          }
+          if(child.name === "CorkTable") 
+          {
+            objects.corkTable = child;
+          }
+        }     
       });
 
     setInteractables(objects);
@@ -89,6 +97,13 @@ export default function Scene() {
             <Bookshelf
               playerRef={playerRef}
               target={interactables.bookshelf}
+            />
+          )}
+
+          {interactables.corkTable && (
+            <Board
+              playerRef={playerRef}
+              target={interactables.corkTable}
             />
           )}
 
