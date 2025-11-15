@@ -49,6 +49,7 @@ export default function Bookshelf({ target, playerRef }) {
   useEffect(() => {
     if (isNear && interact && !isOpen && bookCovers.length > 0) {
       openPopup("books", bookCovers);
+      resetKeys()
     }
   }, [isNear, interact, isOpen, bookCovers]);
 

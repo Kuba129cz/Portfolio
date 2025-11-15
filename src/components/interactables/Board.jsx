@@ -53,6 +53,7 @@ export default function Board({ target, playerRef })
     {
         console.log("Otevírám popup s certifikáty:", certificates);
         openPopup("certificates", certificates);
+        resetKeys()
     }
     }, [isNear, interact, isOpen]);
 
