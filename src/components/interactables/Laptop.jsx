@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box3, Vector3, Euler, Quaternion } from "three";
-import { Html } from "@react-three/drei";
+import { Html, useTexture } from "@react-three/drei";
 import QuestionMark from "../ui/QuestionMark.jsx";
 import useIsNear from "../../hooks/useIsNear.jsx";
 import InteractionPrompt from "../ui/InteractionPrompt.jsx";
@@ -9,6 +9,7 @@ import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
 
 export default function Laptop({ target, playerRef }) {
   const webURL = "https://jakub-hampejs-web.vercel.app/";
+  const screenTexture = useTexture("/textures/cv_web.png");
 
   const [questionMarkPos, setQuestionMarkPos] = useState(null);
   const [interactionCenter, setInteractionCenter] = useState(null);
@@ -73,7 +74,8 @@ export default function Laptop({ target, playerRef }) {
     useEffect(() => {
     if (!isNear) return;
 
-    if (interact && !isOpen) {        // vstup do focus módu
+    if (interact && !isOpen)
+    {        // vstup do focus módu
         const screenForward = new Vector3(0, 0, 1).applyEuler(screenRot).normalize();
         setFocusTarget({
         position: screenPos.clone().add(screenForward.clone().multiplyScalar(1.2)),
@@ -81,13 +83,6 @@ export default function Laptop({ target, playerRef }) {
         });
         setReadyToOpenPopup(false); // kvuli animaci kamery - pockame nez se dokonci
     }
-
-    // if ((interact || escape) && isOpen) {
-    //     // opuštění focus módu
-    //     closePopup();
-    //     setReadyToOpenPopup(false);
-    // }
-
     }, [isNear, interact, isOpen]);
 
     useEffect(() => { // pro otevreni popup
@@ -119,14 +114,25 @@ export default function Laptop({ target, playerRef }) {
       {questionMarkPos && <QuestionMark position={questionMarkPos.toArray()} visible={true} />}
       {interactionCenter && !isOpen && <InteractionPrompt position={interactionCenter} visible={isNear} />}
 
-      <group position={screenPos} rotation={screenRot}>
-        {/* Plane může být jen placeholder */}
+        {/* Maybe rewrite to BasicMesh */}
+        <group position={screenPos} rotation={screenRot}>
+        <rectAreaLight
+            intensity={0.5}
+            width={screenSize.x}
+            height={screenSize.y}
+            position={[0, 0, 0.1]}
+        />
         <mesh>
-          <planeGeometry args={[screenSize.x, screenSize.y]} />
-          <meshBasicMaterial color="blue" />
-        </mesh>
+            <planeGeometry args={[screenSize.x, screenSize.y]} />
+            <meshStandardMaterial
+            map={screenTexture}
+            emissive={"e#00b4d8"}
+            emissiveIntensity={0.001}
+            toneMapped={false}
+            />
+        </mesh>         
 
-        {/* HTML iframe přímo na displeji */}
+        {/* HTML iframe */}
         {isOpen && (
         <Html
             transform
