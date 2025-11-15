@@ -8,6 +8,8 @@ import { usePopup } from "../../context/PopupContext.jsx";
 import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
 
 export default function Laptop({ target, playerRef }) {
+  const webURL = "https://jakub-hampejs-web.vercel.app/"
+
   const [questionMarkPos, setQuestionMarkPos] = useState(null);
   const [interactionCenter, setInteractionCenter] = useState(null);
 
@@ -15,8 +17,10 @@ export default function Laptop({ target, playerRef }) {
   const [screenRot, setScreenRot] = useState(() => new Euler());
   const [screenSize, setScreenSize] = useState(() => new Vector3());
 
-  const { isOpen, openPopup } = usePopup();
+  const { isOpen, openPopup, setFocusTarget  } = usePopup();
   const { interact } = useKeyboardControls();
+
+  const { readyToOpenPopup, setReadyToOpenPopup } = usePopup();
 
   useEffect(() => {
     if (!target) return;
@@ -71,20 +75,51 @@ export default function Laptop({ target, playerRef }) {
     setInteractionCenter(interactionCenter);
   }, [target]);
 
-  const isNear = useIsNear(playerRef, interactionCenter, 1.5);
+  const isNear = useIsNear(playerRef, interactionCenter, 2.15);
+
+  useEffect(() => {
+if (isNear && interact && !isOpen) 
+    {
+        const screenForward = new Vector3(0, 0, 1)
+            .applyEuler(screenRot)
+            .normalize();
+
+        setFocusTarget({
+        position: screenPos.clone().add(screenForward.clone().multiplyScalar(1.2)),
+        lookAt: screenPos.clone()
+        });
+        setReadyToOpenPopup(false);
+
+       // openPopup("webview", { url: webURL });
+    }
+  }, [isNear, interact, isOpen, screenPos, screenRot]);
+
+  useEffect(() => {
+  if (readyToOpenPopup && !isOpen) {
+      openPopup("webview", { 
+        url: webURL, 
+        position: screenPos.toArray(),
+        rotation: [screenRot.x, screenRot.y, screenRot.z],
+        size: [screenSize.x, screenSize.y]
+        });
+  }
+}, [readyToOpenPopup, isOpen]);
+
 
   return (
     <>
       {questionMarkPos && <QuestionMark position={questionMarkPos.toArray()} visible={true} />}
-      {interactionCenter && <InteractionPrompt position={interactionCenter} visible={isNear} />}
+      {interactionCenter && !isOpen && <InteractionPrompt position={interactionCenter} visible={isNear} />}
 
-      {/* Mesh displeje */}
-      <group position={screenPos} rotation={screenRot}>
-        <mesh>
-          <planeGeometry args={[screenSize.x, screenSize.y]} />
-          <meshBasicMaterial color="red" />
-        </mesh>
-      </group>
+    <group position={screenPos} rotation={screenRot}>
+    {/* Plane můžeš zachovat jen jako placeholder nebo odstranit */}
+    <mesh>
+        <planeGeometry args={[screenSize.x, screenSize.y]} />
+        <meshBasicMaterial color="red" />
+    </mesh>
+    </group>
+
+
     </>
   );
 }

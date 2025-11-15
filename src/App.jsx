@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber"
 import Scene from "./components/Scene.jsx"
 import { PopupProvider, usePopup } from "./context/PopupContext.jsx";
 import DocumentPopup from "./components/ui/DocumentPopup.jsx";
+import WebViewPopup from "./components/ui/WebViewPopup.jsx";
 
 function PopupContainer() {
   const { isOpen, popupType, popupData, closePopup } = usePopup();
@@ -13,6 +14,8 @@ function PopupContainer() {
       return <DocumentPopup documents={popupData} title="Bookshelf" />;
     case "certificates":
       return <DocumentPopup documents={popupData} title="Certificates" />;
+     case "webview":
+       return <WebViewPopup url={popupData} />; 
     default:
       return null;
   }
