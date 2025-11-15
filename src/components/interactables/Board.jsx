@@ -11,7 +11,8 @@ export default function Board({ target, playerRef })
     const [questionMarkPos, setQuestionMarkPos] = useState(null);
     const [interactionCenter, setInteractionCenter] = useState(null);
     const { isOpen, openPopup } = usePopup();
-    const { interact } = useKeyboardControls();
+    const { keys, resetKeys } = useKeyboardControls();
+    const { interact } = keys;
 
     const modules = import.meta.glob("/src/assets/diplomas/*.{jpg,png,jpeg}", { eager: false });
     const [certificates, setCertificates] = useState([]);

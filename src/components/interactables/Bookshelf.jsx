@@ -13,7 +13,8 @@ export default function Bookshelf({ target, playerRef }) {
   const [interactionCenter, setInteractionCenter] = useState(null);
   const [bookCovers, setBookCovers] = useState([]);
   const { isOpen, openPopup } = usePopup();
-  const { interact } = useKeyboardControls();
+  const { keys, resetKeys } = useKeyboardControls();
+  const { interact } = keys
 
   useEffect(() => {
     const loadCovers = async () => {

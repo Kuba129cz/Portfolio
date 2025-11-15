@@ -9,7 +9,7 @@ export default function CameraController({ playerRef, houseRef }) {
   const rotation = useMouseControls();
   const { isOpen } = usePopup()
 
-  const { focusTarget, popupType, setReadyToOpenPopup } = usePopup(); // notebook
+  const { focusTarget, setReadyToOpenPopup } = usePopup(); // notebook
 
 
   const [targetRadius, setTargetRadius] = useState(5); 

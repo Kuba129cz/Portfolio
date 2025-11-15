@@ -15,6 +15,19 @@ export function KeyboardProvider({ children }) {
     interact: false,
     escape: false
   })
+
+  const resetKeys = () => {
+    setKeys({
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+      run: false,
+      jump: false,
+      interact: false,
+      escape: false
+    });
+  };
   
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -53,7 +66,7 @@ export function KeyboardProvider({ children }) {
   }, []);
 
   return (
-    <KeyboardContext.Provider value={keys}>
+    <KeyboardContext.Provider value={ {keys, resetKeys} }>
       {children}
     </KeyboardContext.Provider>
   );

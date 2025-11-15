@@ -8,7 +8,7 @@ import { usePopup } from "../../context/PopupContext.jsx";
 import { useKeyboardControls } from "../../hooks/KeyboardContext.jsx";
 
 export default function Laptop({ target, playerRef }) {
-  const webURL = "https://jakub-hampejs-web.vercel.app/"
+  const webURL = "https://jakub-hampejs-web.vercel.app/";
 
   const [questionMarkPos, setQuestionMarkPos] = useState(null);
   const [interactionCenter, setInteractionCenter] = useState(null);
@@ -17,21 +17,19 @@ export default function Laptop({ target, playerRef }) {
   const [screenRot, setScreenRot] = useState(() => new Euler());
   const [screenSize, setScreenSize] = useState(() => new Vector3());
 
-  const { isOpen, openPopup, setFocusTarget  } = usePopup();
-  const { interact } = useKeyboardControls();
-
-  const { readyToOpenPopup, setReadyToOpenPopup } = usePopup();
+  const { isOpen, openPopup, setFocusTarget, readyToOpenPopup, setReadyToOpenPopup, closePopup  } = usePopup();
+  const { keys, resetKeys } = useKeyboardControls();
+  const { interact, escape } = keys;
 
   useEffect(() => {
     if (!target) return;
 
     const screenMesh = target.getObjectByName("Laptop_01_Cube025-Mesh_1");
     if (!screenMesh) {
-      console.warn("Nenašel jsem mesh: Laptop_01_Cube025-Mesh_1", target);
+      console.warn("Mesh: Laptop_01_Cube025-Mesh_1 has not been found.", target);
       return;
     }
 
-    // Pozice
     const worldPos = new Vector3();
     screenMesh.getWorldPosition(worldPos);
     worldPos.x += 0;
@@ -39,23 +37,18 @@ export default function Laptop({ target, playerRef }) {
     worldPos.z += -0.6;
     setScreenPos(worldPos);
 
-    // Rotace
     const worldQuat = new Quaternion();
     screenMesh.getWorldQuaternion(worldQuat);
     const worldRot = new Euler().setFromQuaternion(worldQuat);
-    worldRot.x += - 0.19; //uhel natoceni
-    worldRot.y += 0;
-    worldRot.z += 0;
+    worldRot.x += -0.19;
     setScreenRot(worldRot);
 
-    // Velikost
     const box = new Box3().setFromObject(screenMesh);
     const size = new Vector3();
     box.getSize(size);
     size.x *= 1.05;
-    size.y *= 1.05; // vyska obrazovky
+    size.y *= 1.05;
     setScreenSize(size);
-
   }, [target]);
 
   useEffect(() => {
@@ -77,49 +70,90 @@ export default function Laptop({ target, playerRef }) {
 
   const isNear = useIsNear(playerRef, interactionCenter, 2.15);
 
-  useEffect(() => {
-if (isNear && interact && !isOpen) 
-    {
-        const screenForward = new Vector3(0, 0, 1)
-            .applyEuler(screenRot)
-            .normalize();
+    useEffect(() => {
+    if (!isNear) return;
 
+    if (interact && !isOpen) {        // vstup do focus módu
+        const screenForward = new Vector3(0, 0, 1).applyEuler(screenRot).normalize();
         setFocusTarget({
         position: screenPos.clone().add(screenForward.clone().multiplyScalar(1.2)),
         lookAt: screenPos.clone()
         });
-        setReadyToOpenPopup(false);
-
-       // openPopup("webview", { url: webURL });
+        setReadyToOpenPopup(false); // kvuli animaci kamery - pockame nez se dokonci
     }
-  }, [isNear, interact, isOpen, screenPos, screenRot]);
 
-  useEffect(() => {
-  if (readyToOpenPopup && !isOpen) {
-      openPopup("webview", { 
-        url: webURL, 
+    // if ((interact || escape) && isOpen) {
+    //     // opuštění focus módu
+    //     closePopup();
+    //     setReadyToOpenPopup(false);
+    // }
+
+    }, [isNear, interact, isOpen]);
+
+    useEffect(() => { // pro otevreni popup
+    if (readyToOpenPopup && !isOpen) {
+        openPopup("webview", {
+        url: webURL,
         position: screenPos.toArray(),
         rotation: [screenRot.x, screenRot.y, screenRot.z],
         size: [screenSize.x, screenSize.y]
         });
-  }
-}, [readyToOpenPopup, isOpen]);
+        setReadyToOpenPopup(false);
+    }
+    }, [readyToOpenPopup]);
 
+    useEffect(() => { // pro zavreni popupu
+        console.log(`readyToOpenPopup: ${readyToOpenPopup}`)
+        console.log(`isOpen: ${isOpen}`)
+        console.log(`escape: ${escape}`)
+        console.log(`interact: ${interact}`)
+    if (isOpen && (escape || interact)) {
+        console.log("Probehlo")
+        closePopup()
+        resetKeys()
+    }
+    }, [isOpen, escape, interact]);
 
   return (
     <>
       {questionMarkPos && <QuestionMark position={questionMarkPos.toArray()} visible={true} />}
       {interactionCenter && !isOpen && <InteractionPrompt position={interactionCenter} visible={isNear} />}
 
-    <group position={screenPos} rotation={screenRot}>
-    {/* Plane můžeš zachovat jen jako placeholder nebo odstranit */}
-    <mesh>
-        <planeGeometry args={[screenSize.x, screenSize.y]} />
-        <meshBasicMaterial color="red" />
-    </mesh>
-    </group>
+      <group position={screenPos} rotation={screenRot}>
+        {/* Plane může být jen placeholder */}
+        <mesh>
+          <planeGeometry args={[screenSize.x, screenSize.y]} />
+          <meshBasicMaterial color="blue" />
+        </mesh>
 
-
+        {/* HTML iframe přímo na displeji */}
+        {isOpen && (
+        <Html
+            transform
+            occlude
+            distanceFactor={0.4256}
+            position={[- 0.0 , 0, 0.001]} // malé odsazení nad plane
+            rotation-x={ - 0 }
+            style={{
+            width: "1280px",
+            height: "840px",
+            borderRadius: "8px",
+            overflow: "hidden",
+            boxShadow: "0 0 20px rgba(0,0,0,0.5)",
+            border: "2px solid rgba(0,0,0,1)"
+            }}
+        >
+            <iframe
+            src={webURL}
+            style={{
+                width: "100%",
+                height: "100%",
+                border: "none"
+            }}
+            />
+        </Html>
+        )}
+      </group>
     </>
   );
 }
