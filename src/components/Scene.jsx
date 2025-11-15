@@ -12,6 +12,7 @@ import House from "./models/House.jsx";
 import Bookshelf from './interactables/Bookshelf.jsx';
 import { usePopup } from "./../context/PopupContext.jsx";
 import Board from "./interactables/Board.jsx";
+import Laptop from './interactables/Laptop.jsx';
 
 export default function Scene() {
   const playerRef = useRef();
@@ -47,6 +48,10 @@ export default function Scene() {
           {
             objects.corkTable = child;
           }
+          if(child.name === "Laptop_01_Cube025")
+          { 
+            objects.Laptop = child;
+          } 
         }     
       });
 
@@ -106,6 +111,12 @@ export default function Scene() {
               target={interactables.corkTable}
             />
           )}
+
+          {interactables.Laptop && (
+            <Laptop
+              playerRef={playerRef}
+              target={interactables.Laptop}
+            /> )}
 
               <PlayerControls
                 playerRef={playerRef}

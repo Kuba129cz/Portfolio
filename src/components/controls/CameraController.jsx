@@ -7,7 +7,10 @@ import { usePopup } from "../../context/PopupContext.jsx";
 export default function CameraController({ playerRef, houseRef }) {
   const { camera } = useThree();
   const rotation = useMouseControls();
-const { isOpen } = usePopup()
+  const { isOpen } = usePopup()
+
+  const { focusTarget, setReadyToOpenPopup } = usePopup(); // notebook
+
 
   const [targetRadius, setTargetRadius] = useState(5); 
   const radiusRef = useRef(5);
@@ -34,6 +37,19 @@ const { isOpen } = usePopup()
   }, [houseRef]);
 
   useFrame(() => {
+    if (focusTarget) 
+    {
+      camera.position.lerp(focusTarget.position, 0.1);
+      camera.lookAt(focusTarget.lookAt);
+      const dist = camera.position.distanceTo(focusTarget.position);
+
+      // pozice kamery u displeje
+      if (dist < 0.05) {
+          setReadyToOpenPopup(true);
+      }
+        return; // přeruš běžný pohyb kamery
+    }
+
     if (!playerRef.current || isOpen) return;
 
     const playerPos = playerRef.current.translation();

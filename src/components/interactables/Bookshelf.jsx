@@ -13,7 +13,8 @@ export default function Bookshelf({ target, playerRef }) {
   const [interactionCenter, setInteractionCenter] = useState(null);
   const [bookCovers, setBookCovers] = useState([]);
   const { isOpen, openPopup } = usePopup();
-  const { interact } = useKeyboardControls();
+  const { keys, resetKeys } = useKeyboardControls();
+  const { interact } = keys
 
   useEffect(() => {
     const loadCovers = async () => {
@@ -48,6 +49,7 @@ export default function Bookshelf({ target, playerRef }) {
   useEffect(() => {
     if (isNear && interact && !isOpen && bookCovers.length > 0) {
       openPopup("books", bookCovers);
+      resetKeys()
     }
   }, [isNear, interact, isOpen, bookCovers]);
 

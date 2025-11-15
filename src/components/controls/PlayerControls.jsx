@@ -6,7 +6,8 @@ import { useMouseControls } from "../../hooks/MouseContext.jsx";
 import { usePopup } from "../../context/PopupContext.jsx";
 
 export default function PlayerControls({ playerRef, setCurrentAction }) {
-  const { forward, backward, left, right, run, jump } = useKeyboardControls();
+  const { keys, resetKeys } = useKeyboardControls();
+  const { forward, backward, left, right, run, jump } = keys
   const rotation = useMouseControls(); 
   const { camera } = useThree();
   const { isOpen } = usePopup();
