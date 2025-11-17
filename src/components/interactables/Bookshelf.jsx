@@ -34,7 +34,7 @@ export default function Bookshelf({ target, playerRef }) {
     box.getCenter(center);
     box.getSize(size);
 
-    //center.z += 2; // offset
+    center.z += 2; // offset
 
     const interactionCenter = center.clone();
     const questionMarkPos = interactionCenter.clone();
