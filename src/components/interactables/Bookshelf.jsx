@@ -34,7 +34,7 @@ export default function Bookshelf({ target, playerRef }) {
     box.getCenter(center);
     box.getSize(size);
 
-    center.z += 2; // offset
+    //center.z += 2; // offset
 
     const interactionCenter = center.clone();
     const questionMarkPos = interactionCenter.clone();
@@ -42,11 +42,17 @@ export default function Bookshelf({ target, playerRef }) {
 
     setQuestionMarkPos(questionMarkPos);
     setInteractionCenter(interactionCenter);
+
+    console.log(`Position x: ${questionMarkPos.x}`)
+    console.log(`Position y: ${questionMarkPos.y}`)
+    console.log(`Position z: ${questionMarkPos.z}`)
+
   }, [target]);
 
   const isNear = useIsNear(playerRef, interactionCenter, 1.5);
 
   useEffect(() => {
+    if(isNear)
     if (isNear && interact && !isOpen && bookCovers.length > 0) {
       openPopup("books", bookCovers);
       resetKeys()

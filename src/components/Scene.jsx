@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Physics, RigidBody, CapsuleCollider } from "@react-three/rapier";
-import { OrbitControls } from "@react-three/drei";
+import { Sky } from "@react-three/drei";
 import { KeyboardProvider } from "../hooks/KeyboardContext.jsx";
 import { MouseProvider } from "../hooks/MouseContext.jsx";
 import { usePointerLock } from "../hooks/usePointer.jsx";
@@ -14,6 +14,7 @@ import Board from "./interactables/Board.jsx";
 import Laptop from './interactables/Laptop.jsx';
 import { usePopup } from "./../context/PopupContext.jsx";
 import Loader from "./ui/Loader.jsx";
+import * as THREE from "three";
 
 export default function Scene() {
   const playerRef = useRef();
@@ -23,6 +24,7 @@ export default function Scene() {
   const [interactables, setInteractables] = useState({});
   const [started, setStarted] = useState(false);
   const { mouseLocked, lock, unlock } = usePointerLock(canvasRef);
+
   const { isOpen, setIsOpen } = usePopup();
 
   useEffect(() => {
@@ -41,7 +43,13 @@ export default function Scene() {
     const objects = {};
     houseRef.current.traverse((child) => {
       if (child.isGroup) {
-        if (child.name === "bookcaseWideFilled") objects.bookshelf = child;
+        if (child.name === "bookcaseWideFilled")
+        {
+        //  console.log(child)
+          objects.bookshelf = child;
+
+        }
+           
         if (child.name === "CorkTable") objects.corkTable = child;
         if (child.name === "Laptop_01_Cube025") objects.Laptop = child;
       }
@@ -63,16 +71,21 @@ export default function Scene() {
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1.2} />
-
+        <Sky
+          distance={450000}   // velikost nebe
+          sunPosition={[5, 10, 5]}  // pozice slunce
+          inclination={0.49}  // výška slunce
+          azimuth={0.25}      // směr
+        />
         <Suspense fallback={null}>
           <Physics>
             {/* Floor */}
-            <RigidBody type="fixed" colliders="cuboid">
-              <mesh rotation-x={-Math.PI / 2} receiveShadow position={[0, 0, 0]}>
-                <planeGeometry args={[20, 20]} />
-                <meshStandardMaterial color="lightgray" />
-              </mesh>
-            </RigidBody>
+          {/* <RigidBody type="fixed" colliders="cuboid">
+            <mesh rotation-x={-Math.PI / 2} receiveShadow position={[0, 0, 0]}>
+              <planeGeometry args={[20, 20]} />
+              <meshStandardMaterial map={grassTexture}/>
+            </mesh>
+          </RigidBody> */}
 
             {/* Player */}
             <RigidBody

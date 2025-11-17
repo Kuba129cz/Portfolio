@@ -18,9 +18,10 @@ export default function Laptop({ target, playerRef }) {
   const [screenRot, setScreenRot] = useState(() => new Euler());
   const [screenSize, setScreenSize] = useState(() => new Vector3());
 
-  const { isOpen, openPopup, setFocusTarget, readyToOpenPopup, setReadyToOpenPopup, closePopup  } = usePopup();
+  const { isOpen, openPopup, setFocusTarget, readyToOpenPopup, setReadyToOpenPopup, closePopup, popupType, setPopupType  } = usePopup();
   const { keys, resetKeys } = useKeyboardControls();
   const { interact, escape } = keys;
+  
 
   useEffect(() => {
     if (!target) return;
@@ -94,6 +95,7 @@ export default function Laptop({ target, playerRef }) {
         size: [screenSize.x, screenSize.y]
         });
         setReadyToOpenPopup(false);
+        setPopupType("webview")
     }
     }, [readyToOpenPopup]);
 
@@ -128,14 +130,14 @@ export default function Laptop({ target, playerRef }) {
             <planeGeometry args={[screenSize.x, screenSize.y]} />
             <meshStandardMaterial
             map={screenTexture}
-            emissive={"e#00b4d8"}
+            emissive={"#00b4d8"}
             emissiveIntensity={0.001}
             toneMapped={false}
             />
         </mesh>         
 
         {/* HTML iframe */}
-        {isOpen && (
+        {isOpen && popupType === "webview" &&(
         <Html
             transform
             occlude
