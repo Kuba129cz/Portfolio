@@ -60,7 +60,7 @@ export default function Board({ target, playerRef })
     return (
     <>
         {questionMarkPos && <QuestionMark position={questionMarkPos.toArray()} visible={true} />}
-        {interactionCenter && <InteractionPrompt position={interactionCenter} visible={isNear} />}
+        {interactionCenter && !isOpen && <InteractionPrompt position={interactionCenter} visible={isNear} />}
     </>
     );
 }
