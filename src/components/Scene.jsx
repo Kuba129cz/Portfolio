@@ -42,17 +42,17 @@ export default function Scene() {
 
     const objects = {};
     houseRef.current.traverse((child) => {
-      if (child.isGroup) {
-        if (child.name === "bookcaseWideFilled")
-        {
-        //  console.log(child)
-          objects.bookshelf = child;
+    if (child.isGroup) {
+      if (child.name === "bookcaseWideFilled")
+      {
+      //  console.log(child)
+        objects.bookshelf = child;
 
-        }
-           
-        if (child.name === "CorkTable") objects.corkTable = child;
-        if (child.name === "Laptop_01_Cube025") objects.Laptop = child;
       }
+          
+      if (child.name === "CorkTable") objects.corkTable = child;
+      if (child.name === "Laptop_01_Cube025") objects.Laptop = child;
+    }
     });
     setInteractables(objects);
   }, [houseRef.current]);

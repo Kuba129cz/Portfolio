@@ -42,11 +42,6 @@ export default function Bookshelf({ target, playerRef }) {
 
     setQuestionMarkPos(questionMarkPos);
     setInteractionCenter(interactionCenter);
-
-    console.log(`Position x: ${questionMarkPos.x}`)
-    console.log(`Position y: ${questionMarkPos.y}`)
-    console.log(`Position z: ${questionMarkPos.z}`)
-
   }, [target]);
 
   const isNear = useIsNear(playerRef, interactionCenter, 1.5);
