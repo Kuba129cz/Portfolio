@@ -11,7 +11,6 @@ export function PopupProvider({ children }) {
   const [isFocusing, setIsFocusing] = useState(false);
   const [focusTarget, setFocusTarget] = useState(null); // { position: Vector3, lookAt: Vector3 }
   const [readyToOpenPopup, setReadyToOpenPopup] = useState(false);
-
   const openPopup = (type, data = null) => {
     if (!canOpen) return; 
 
@@ -30,7 +29,7 @@ export function PopupProvider({ children }) {
   };
 
   return (
-    <PopupContext.Provider value={{ isOpen, setIsOpen, popupType, popupData, openPopup, closePopup, canOpen, setCanOpen, focusTarget, setFocusTarget, readyToOpenPopup, setReadyToOpenPopup }}>
+    <PopupContext.Provider value={{ isOpen, setIsOpen, popupType, setPopupType ,popupData, openPopup, closePopup, canOpen, setCanOpen, focusTarget, setFocusTarget, readyToOpenPopup, setReadyToOpenPopup }}>
       {children}
     </PopupContext.Provider>
   );
