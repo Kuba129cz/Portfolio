@@ -75,17 +75,17 @@ export default function Laptop({ target, playerRef }) {
     if (!isNear) return;
 
     if (interact && !isOpen)
-    {        // vstup do focus módu
+    {        // foccus mode
         const screenForward = new Vector3(0, 0, 1).applyEuler(screenRot).normalize();
         setFocusTarget({
         position: screenPos.clone().add(screenForward.clone().multiplyScalar(1.2)),
         lookAt: screenPos.clone()
         });
-        setReadyToOpenPopup(false); // kvuli animaci kamery - pockame nez se dokonci
+        setReadyToOpenPopup(false); // wait before camera finish its animation
     }
     }, [isNear, interact, isOpen]);
 
-    useEffect(() => { // pro otevreni popup
+    useEffect(() => { // for open popup
     if (readyToOpenPopup && !isOpen) {
         openPopup("webview", {
         url: webURL,
@@ -97,11 +97,13 @@ export default function Laptop({ target, playerRef }) {
     }
     }, [readyToOpenPopup]);
 
-    useEffect(() => { // pro zavreni popupu
+    useEffect(() => { // for close popup
+      /*
         console.log(`readyToOpenPopup: ${readyToOpenPopup}`)
         console.log(`isOpen: ${isOpen}`)
         console.log(`escape: ${escape}`)
         console.log(`interact: ${interact}`)
+        */
     if (isOpen && (escape || interact)) {
         console.log("Probehlo")
         closePopup()
