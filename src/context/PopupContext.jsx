@@ -30,7 +30,7 @@ export function PopupProvider({ children }) {
   };
 
   return (
-    <PopupContext.Provider value={{ isOpen, popupType, popupData, openPopup, closePopup, canOpen, setCanOpen, focusTarget, setFocusTarget, readyToOpenPopup, setReadyToOpenPopup }}>
+    <PopupContext.Provider value={{ isOpen, setIsOpen, popupType, popupData, openPopup, closePopup, canOpen, setCanOpen, focusTarget, setFocusTarget, readyToOpenPopup, setReadyToOpenPopup }}>
       {children}
     </PopupContext.Provider>
   );

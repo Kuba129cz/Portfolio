@@ -10,9 +10,10 @@ import CameraController from "./controls/CameraController.jsx";
 import Man from "./models/Man";
 import House from "./models/House.jsx";
 import Bookshelf from './interactables/Bookshelf.jsx';
-import { usePopup } from "./../context/PopupContext.jsx";
 import Board from "./interactables/Board.jsx";
 import Laptop from './interactables/Laptop.jsx';
+import { usePopup } from "./../context/PopupContext.jsx";
+import Loader from "./ui/Loader.jsx";
 
 export default function Scene() {
   const playerRef = useRef();
@@ -20,117 +21,100 @@ export default function Scene() {
   const canvasRef = useRef();
   const [currentAction, setCurrentAction] = useState("Idle_Neutral");
   const [interactables, setInteractables] = useState({});
+  const [started, setStarted] = useState(false);
   const { mouseLocked, lock, unlock } = usePointerLock(canvasRef);
-  const { isOpen } = usePopup()
+  const { isOpen, setIsOpen } = usePopup();
 
   useEffect(() => {
-    if (isOpen) {
-      unlock(); 
-    } else if (!mouseLocked) {
-      lock();
-    }
-  }, [isOpen]);
+    if (!started) return;
+    if (isOpen) unlock();
+    else if (!mouseLocked) lock();
+  }, [started, isOpen]);
 
-  useEffect(() => 
-  {
+  useEffect(() => {
+    setIsOpen(true); // Loader
+  }, []);
+
+  useEffect(() => {
     if (!houseRef.current) return;
 
     const objects = {};
-    houseRef.current.traverse((child) => 
-      {  
-        if(child.isGroup)
-        {
-          if(child.name === "bookcaseWideFilled") 
-          {
-            objects.bookshelf = child;
-          }
-          if(child.name === "CorkTable") 
-          {
-            objects.corkTable = child;
-          }
-          if(child.name === "Laptop_01_Cube025")
-          { 
-            objects.Laptop = child;
-          } 
-        }     
-      });
-
+    houseRef.current.traverse((child) => {
+      if (child.isGroup) {
+        if (child.name === "bookcaseWideFilled") objects.bookshelf = child;
+        if (child.name === "CorkTable") objects.corkTable = child;
+        if (child.name === "Laptop_01_Cube025") objects.Laptop = child;
+      }
+    });
     setInteractables(objects);
   }, [houseRef.current]);
 
   return (
-    <Canvas ref={canvasRef} shadows camera={{ position: [3, 2, 5], fov: 50 }}>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 5, 5]} intensity={1.2} />
+    <>
+      {!started && <Loader onStart={() => {
+        setStarted(true); 
+        setIsOpen(false); 
+      }} />}
+      <Canvas
+        ref={canvasRef}
+        shadows
+        camera={{ position: [3, 2, 5], fov: 50 }}
+        style={{ width: "100%", height: "100%", display: "block" }}
+      >
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[5, 5, 5]} intensity={1.2} />
 
-      <Suspense fallback={null}>
-        <Physics>
-          {/* Floor */}
-          <RigidBody type="fixed" colliders="cuboid">
-            <mesh rotation-x={-Math.PI / 2} receiveShadow position={[0, 0, 0]}>
-              <planeGeometry args={[20, 20]} />
-              <meshStandardMaterial color="lightgray" />
-            </mesh>
-          </RigidBody>
+        <Suspense fallback={null}>
+          <Physics>
+            {/* Floor */}
+            <RigidBody type="fixed" colliders="cuboid">
+              <mesh rotation-x={-Math.PI / 2} receiveShadow position={[0, 0, 0]}>
+                <planeGeometry args={[20, 20]} />
+                <meshStandardMaterial color="lightgray" />
+              </mesh>
+            </RigidBody>
 
-          {/* Player */}
-          <RigidBody
-            ref={playerRef}
-            colliders={false}
-            mass={1}
-            position={[0, 1, 0]}
-            restitution={0}
-            friction={1}
-            lockRotations
-            linearDamping={1.5}
-            angularDamping={2.5}
-          >
-            <CapsuleCollider args={[0.5, 0.3]} position={[0, 0.8, 0]} />
-            <Man currentAction={currentAction} position={[0, 0, 0]} />
-          </RigidBody>
+            {/* Player */}
+            <RigidBody
+              ref={playerRef}
+              colliders={false}
+              mass={1}
+              position={[0, 1, 0]}
+              restitution={0}
+              friction={1}
+              lockRotations
+              linearDamping={1.5}
+              angularDamping={2.5}
+            >
+              <CapsuleCollider args={[0.5, 0.3]} position={[0, 0.8, 0]} />
+              <Man currentAction={currentAction} position={[0, 0, 0]} />
+            </RigidBody>
 
-          {/* House */}
-          <RigidBody type="fixed" colliders="trimesh">
-            <House ref={houseRef} position={[-3, 0.01, 3]} />
-          </RigidBody>
+            {/* House */}
+            <RigidBody type="fixed" colliders="trimesh">
+              <House ref={houseRef} position={[-3, 0.01, 3]} />
+            </RigidBody>
 
-          {/* Ovládání */}
-          <KeyboardProvider>
-            <MouseProvider>
+            {/* Interactables */}
+            <KeyboardProvider>
+              <MouseProvider>
+                {interactables.bookshelf && (
+                  <Bookshelf playerRef={playerRef} target={interactables.bookshelf} />
+                )}
+                {interactables.corkTable && (
+                  <Board playerRef={playerRef} target={interactables.corkTable} />
+                )}
+                {interactables.Laptop && (
+                  <Laptop playerRef={playerRef} target={interactables.Laptop} />
+                )}
 
-          {interactables.bookshelf && (
-            <Bookshelf
-              playerRef={playerRef}
-              target={interactables.bookshelf}
-            />
-          )}
-
-          {interactables.corkTable && (
-            <Board
-              playerRef={playerRef}
-              target={interactables.corkTable}
-            />
-          )}
-
-          {interactables.Laptop && (
-            <Laptop
-              playerRef={playerRef}
-              target={interactables.Laptop}
-            /> )}
-
-              <PlayerControls
-                playerRef={playerRef}
-                setCurrentAction={setCurrentAction}
-              />
-              <CameraController
-                playerRef={playerRef}
-                houseRef={houseRef}
-              />
-            </MouseProvider>
-          </KeyboardProvider>
-        </Physics>
-      </Suspense>
-      <OrbitControls />
-    </Canvas>
+                <PlayerControls playerRef={playerRef} setCurrentAction={setCurrentAction} />
+                <CameraController playerRef={playerRef} houseRef={houseRef} />
+              </MouseProvider>
+            </KeyboardProvider>
+          </Physics>
+        </Suspense>
+      </Canvas>
+    </>
   );
 }
