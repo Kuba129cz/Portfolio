@@ -1,0 +1,9 @@
+{
+  "routes": [
+    {
+      "src": "/cv/(.*)",
+      "dest": "https://jakub-hampejs-web.vercel.app/$1",
+      "status": 200
+    }
+  ]
+}
