@@ -60,7 +60,7 @@ export default function Bookshelf({ target, playerRef }) {
         <QuestionMark position={questionMarkPos.toArray()} visible={true} />
       )}
 
-      {interactionCenter && (
+      {interactionCenter && !isOpen &&(
         <InteractionPrompt position={interactionCenter} visible={isNear} />
       )}
     </>
