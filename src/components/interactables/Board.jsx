@@ -48,13 +48,14 @@ export default function Board({ target, playerRef })
 
     const isNear = useIsNear(playerRef, interactionCenter, 3);
 
-    useEffect(() => {
-    if (isNear && interact && !isOpen && certificates.length > 0) 
+    useEffect(() =>
     {
-        console.log("Otevírám popup s certifikáty:", certificates);
-        openPopup("certificates", certificates);
-        resetKeys()
-    }
+        if (isNear && interact && !isOpen && certificates.length > 0) 
+        {
+            console.log("Otevírám popup s certifikáty:", certificates);
+            openPopup("certificates", certificates);
+            resetKeys()
+        }
     }, [isNear, interact, isOpen]);
 
     return (

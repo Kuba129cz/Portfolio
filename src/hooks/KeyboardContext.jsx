@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 // Create context
 const KeyboardContext = createContext();
 
-// 2. Provider
+// Provider
 export function KeyboardProvider({ children }) {
   const [keys, setKeys] = useState({
     forward: false,
@@ -72,7 +72,7 @@ export function KeyboardProvider({ children }) {
   );
 }
 
-// 3. Custom hook pro jednodušší použití
+// Custom hook for easier use
 export function useKeyboardControls() {
   return useContext(KeyboardContext);
 }

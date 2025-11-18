@@ -3,11 +3,11 @@ import { usePopup } from "../context/PopupContext.jsx";
 
 export function usePointerLock(canvasRef) {
   const [mouseLocked, setMouseLocked] = useState(false);
-  const { isOpen } = usePopup(); // přístup ke stavu popupu
+  const { isOpen } = usePopup(); // access to popup state
 
   useEffect(() => {
     const handleUserInput = (e) => {
-      if (isOpen) return; // pokud je popup, neuzamykáme myš
+      if (isOpen) return; // if there is a popup, do not lock the mouse
       if (document.pointerLockElement !== canvasRef.current) {
         canvasRef.current?.requestPointerLock();
       }
@@ -35,7 +35,7 @@ export function usePointerLock(canvasRef) {
   };
   const unlock = () => document.exitPointerLock();
 
-  // pokud je popup otevřený, zajistíme že myš je odemčená
+  // if the popup is open, ensure that the mouse is unlocked
   useEffect(() => {
     if (isOpen) unlock();
   }, [isOpen]);

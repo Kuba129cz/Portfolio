@@ -142,7 +142,7 @@ export default function Laptop({ target, playerRef }) {
             transform
             occlude
             distanceFactor={0.4256}
-            position={[- 0.0 , 0, 0.001]} // malé odsazení nad plane
+            position={[- 0.0 , 0, 0.001]} 
             rotation-x={ - 0 }
             style={{
             width: "1280px",
