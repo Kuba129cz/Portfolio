@@ -1,9 +1,6 @@
 {
-  "routes": [
-    {
-      "src": "/cv/(.*)",
-      "dest": "https://jakub-hampejs-web.vercel.app/$1",
-      "status": 200
-    }
+  "rewrites": [
+    { "source": "/cv", "destination": "/cv/index.html" },
+    { "source": "/cv/:path*", "destination": "/cv/:path*" }
   ]
 }
