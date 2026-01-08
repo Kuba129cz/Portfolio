@@ -1,0 +1,145 @@
+<head>
+    <meta charset="UTF-8" />
+
+    <!-- Google / schema.org -->
+    <meta itemprop="name" content="PV Power Forecasting - Jakub Hampejs">
+    <meta itemprop="description" content="Predictive models for photovoltaic (PV) power output using machine learning and neural networks. Examples of models from simple baselines to complex LSTM + CNN architectures.">
+    <meta itemprop="image" content="https://jakub-hampejs-web.vercel.app/social-preview.png">
+
+    <!-- Open Graph / LinkedIn / Facebook -->
+    <meta property="og:site_name" content="PV Power Forecasting - Jakub Hampejs">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jakub-hampejs-web.vercel.app/pv_forecast/index.html">
+    <meta property="og:title" content="PV Power Forecasting - Jakub Hampejs">
+    <meta property="og:description" content="Predictive models for photovoltaic (PV) power output with step-by-step explanations and examples.">
+    <meta property="og:image" content="https://jakub-hampejs-web.vercel.app/social-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="600">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PV Power Forecasting - Jakub Hampejs">
+    <meta name="twitter:description" content="Predictive models for photovoltaic (PV) power output with step-by-step explanations and examples.">
+    <meta name="twitter:image" content="https://jakub-hampejs-web.vercel.app/social-preview.png">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PV Power Forecasting - Jakub Hampejs</title>
+
+    <!-- Stylesheets & fonts -->
+    <link rel="stylesheet" href="main.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+
+    <!-- PWA & theme -->
+    <meta name="apple-mobile-web-app-title" content="Jakub Hampejs">
+    <meta name="application-name" content="Jakub Hampejs">
+    <meta name="msapplication-TileColor" content="#0078d7">
+    <meta name="theme-color" content="#ffffff">
+
+    <script type="module" crossorigin src="/cv/assets/index-BEbbnzB7.js"></script>
+    <link rel="stylesheet" crossorigin href="/cv/assets/index-B5gHcS_v.css">
+</head>
+
+<body>
+<span class="background background-0"></span>
+<span class="background background-1"></span>
+
+<a class="button top-right-button" href="../index.html">
+    <span>Back to CV</span>
+</a>
+
+    <main class="content">
+        <section class="pv-section" id="overview">
+        <h1 class="pv-title">Models for Forecasting Photovoltaic Power</h1>
+
+        <p class="pv-description">
+            This project presents a set of predictive models for forecasting the electrical power output of a photovoltaic power plant.
+            Several mathematical models for short-term PV power forecasting were developed, ranging from simple baseline approaches
+            to advanced architectures based on neural networks.
+        </p>
+
+        <p class="pv-description">
+            Model performance strongly depends on the accuracy of meteorological forecasts, which play a key role in short-term
+            photovoltaic power prediction. The most accurate model achieved a normalized mean absolute error (nMAE) of approximately
+            <strong>6.5%</strong> during periods of non-zero power production.
+        </p>
+
+        <p class="pv-description">
+            The resulting model provides direct practical value for photovoltaic power plant operators, particularly for optimizing
+            production forecasts and supporting financial planning under current European electricity spot market conditions.
+        </p>
+        </section>
+
+        <section class="pv-section" id="live-model">
+            <h2 class="pv-section-title">Live Forecasting Model</h2>
+
+            <p class="pv-description">
+                The model provides power output predictions for the next <strong>five days</strong>,
+                which corresponds to the availability horizon of numerical weather forecasts.
+                In addition, it supports retrospective forecasting using historical meteorological data,
+                enabling direct comparison between predicted and actual power production.
+            </p>
+
+            <div class="hf-iframe-wrapper">
+                <iframe
+                src="https://kubas126cz-fveaba.hf.space"
+                frameborder="0"
+                loading="lazy"
+                allowfullscreen
+                ></iframe>
+            </div>
+        </section>
+
+
+        <section class="pv-section" id="publications">
+            <h2 class="pv-section-title">Publications & Documents</h2>
+
+            <p class="pv-description">
+                The following documents provide a detailed technical and scientific background of the presented forecasting models,
+                including methodology, experimental results, and practical evaluation.
+            </p>
+
+            <!-- Master’s Thesis and Presentation -->
+            <h3 class="pv-subsection-title">Master's Thesis & Presentation</h3>
+            <ul class="pv-publication-list">
+                <li>
+                    <strong>Master s Thesis</strong> (2025)<br>
+                    Mathematical model of energy production prediction based on weather forecasts for PV power plants<br>
+                    <a href="/documents/pv_forecast/diploma_thesis.pdf" target="_blank" class="pv-link">View PDF</a>
+                </li>
+                <li>
+                    <strong>Defense Presentation</strong> (2025)<br>
+                    Visual summary of the master's thesis with key results and model comparison<br>
+                    <a href="/documents/pv_forecast/diploma_thesis_presentation.pdf" target="_blank" class="pv-link">View PDF</a>
+                </li>
+            </ul>
+
+            <!-- Conference Papers -->
+            <h3 class="pv-subsection-title">Conference Papers</h3>
+            <ul class="pv-publication-list">
+                <li>
+                    <em>Mathematical Models for Forecasting Photovoltaic Power Output</em><br>
+                    Presented at: <strong>10th International Conference on Mathematical Models & Computational Techniques in Science & Engineering</strong>, Athens, Greece, January 16-18, 2026<br>
+                    In conjunction with: <strong>3rd International Artificial Intelligence Summit</strong><br>
+                    Publication: <strong>WSEAS Transactions on Power Systems (Scopus indexed)</strong><br>
+                    <a href="/documents/pv_forecast/mmctse_2026.pdf" target="_blank" class="pv-link">View PDF</a>
+                </li>
+                <li>
+                    <em>SOLAR POWER FORECASTING USING ARTIFICIAL INTELLIGENCE</em><br>
+                    Presented at: <strong>XXVII International Conference of Young Scientists (ICYS 2025)</strong>, Nitra, Slovakia, Fall 2025<br>
+                    Organized by: Faculty of Engineering, Slovak University of Agriculture<br>
+                    <a href="/documents/pv_forecast/icys_2025.pdf" target="_blank" class="pv-link">View PDF</a>
+                </li>
+            </ul>
+        </section>
+
+
+
+
+
+    </main>
+</body>
