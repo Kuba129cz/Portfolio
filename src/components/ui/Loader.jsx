@@ -15,7 +15,7 @@ export default function Loader({ onStart }) {
 
   return (
     <div className="loader-container">
-      <h1 className="loader-title">Načítání scény…</h1>
+      <h1 className="loader-title">Loading scene...</h1>
 
       <div className="bar-outer">
         <div className="bar-inner" style={{ width: `${progress}%` }} />
